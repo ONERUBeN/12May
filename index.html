@@ -1,0 +1,520 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Мета-теги для мобильных устройств и PWA -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Стратегия Медиацентра | Защита</title>
+
+    <!-- Подключение шрифтов и иконок -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Динамический манифест генерируется через JS ниже -->
+    <link rel="manifest" id="manifest-placeholder">
+
+    <style>
+        /* ================= ПЕРЕМЕННЫЕ И БАЗА ================= */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --accent: #38bdf8;
+            --accent-glow: 0 0 20px rgba(56, 189, 248, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --pad: clamp(20px, 4vw, 50px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: var(--text-main);
+            overflow: hidden; /* Блокируем стандартный скролл */
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* Анимированный фон PWA */
+        .app-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 10% 20%, rgba(15, 23, 42, 1) 0%, rgba(2, 6, 23, 1) 90%);
+            z-index: -2;
+        }
+        .glow-orb {
+            position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; z-index: -1;
+        }
+        .orb-1 { top: -10%; right: -10%; width: 50vw; height: 50vw; background: #0ea5e9; }
+        .orb-2 { bottom: -20%; left: -10%; width: 60vw; height: 60vw; background: #6366f1; }
+
+        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; }
+
+        /* ================= КОНТЕЙНЕР ПРИЛОЖЕНИЯ ================= */
+        #app-container {
+            width: 100%; max-width: 1400px; height: 100%; max-height: 900px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* Убираем рамки на телефонах, делаем на весь экран */
+        @media (max-width: 768px) {
+            #app-container { border-radius: 0; border: none; max-height: none; }
+        }
+
+        /* ================= СЛАЙДЫ ================= */
+        .slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: var(--pad); padding-bottom: 90px;
+            opacity: 0; visibility: hidden;
+            transform: translateX(50px) scale(0.98);
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow-y: auto;
+            display: flex; flex-direction: column;
+        }
+
+        .slide.active { opacity: 1; visibility: visible; transform: translateX(0) scale(1); z-index: 10; }
+        .slide.prev { transform: translateX(-50px) scale(0.98); }
+
+        .slide-header {
+            margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+        }
+        .slide-title { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: var(--text-main); }
+        .slide-title i { color: var(--accent); margin-right: 10px; }
+
+        /* ================= UI КОМПОНЕНТЫ ================= */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 25px; display: flex; flex-direction: column;
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: var(--accent-glow); }
+        .card-icon { font-size: 32px; color: var(--accent); margin-bottom: 15px; }
+        .card h3 { font-size: 22px; margin-bottom: 15px; }
+        .card ul { list-style: none; padding: 0; margin-bottom: 20px; flex-grow: 1;}
+        .card ul li { margin-bottom: 10px; font-size: 15px; color: var(--text-muted); padding-left: 20px; position: relative; }
+        .card ul li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+        .card-footer { padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 14px; font-weight: 600; color: #a5b4fc;}
+
+        .list-item {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);
+            padding: 15px 20px; border-radius: 12px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .list-item .num { font-weight: 900; color: var(--accent); font-size: 20px; min-width: 30px; }
+
+        /* Адаптивная таблица */
+        .data-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 16px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 20px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .data-table th { background: rgba(0,0,0,0.3); color: var(--accent); font-size: 14px; text-transform: uppercase; font-weight: 800; }
+        .data-table td { font-size: 15px; color: var(--text-main); }
+        
+        @media (max-width: 768px) {
+            .data-table thead { display: none; }
+            .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+            .data-table tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 12px; }
+            .data-table td { padding-left: 45%; position: relative; }
+            .data-table td::before {
+                content: attr(data-label); position: absolute; left: 15px; width: 40%;
+                font-size: 12px; color: var(--accent); text-transform: uppercase; font-weight: 700;
+            }
+        }
+
+        /* График 30/70 на CSS */
+        .balance-visual {
+            width: clamp(200px, 40vw, 350px); height: clamp(200px, 40vw, 350px);
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0% 70%, #475569 70% 100%);
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: var(--accent-glow);
+        }
+        .balance-inner {
+            width: 75%; height: 75%; background: var(--bg-dark); border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        /* ================= НАВИГАЦИЯ (НИЖНИЙ БАР) ================= */
+        .controls-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 15px var(--pad);
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+        }
+        .progress-line { position: absolute; top: -2px; left: 0; height: 2px; background: var(--accent); transition: width 0.3s; }
+        
+        .counter { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 16px; letter-spacing: 2px; }
+        .nav-buttons { display: flex; gap: 10px; }
+        .btn {
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            width: 44px; height: 44px; border-radius: 50%; font-size: 18px;
+            cursor: pointer; display: flex; justify-content: center; align-items: center;
+            transition: 0.2s;
+        }
+        .btn:hover:not(:disabled) { background: var(--accent); box-shadow: var(--accent-glow); }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Уведомление об установке PWA */
+        #install-prompt {
+            position: fixed; top: 20px; right: 20px; background: var(--accent); color: #000;
+            padding: 10px 20px; border-radius: 30px; font-weight: 700; font-size: 14px;
+            cursor: pointer; z-index: 1000; display: none; box-shadow: var(--accent-glow);
+            animation: bounceIn 0.5s ease;
+        }
+        @keyframes bounceIn { 0% {transform: scale(0.8); opacity: 0;} 100% {transform: scale(1); opacity: 1;} }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-bg">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <!-- Кнопка установки PWA (появится автоматически, если браузер разрешит) -->
+    <div id="install-prompt"><i class="fa-solid fa-download"></i> Установить приложение</div>
+
+    <div id="app-container">
+        
+        <!-- СЛАЙД 1: Титульный -->
+        <div class="slide active">
+            <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; max-width: 800px;">
+                <span style="display: inline-block; background: var(--accent); color: #000; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 14px; text-transform: uppercase; margin-bottom: 20px; width: fit-content;">Защита проекта | 12 мая</span>
+                <h1 style="font-size: clamp(36px, 6vw, 72px); line-height: 1.1; margin-bottom: 20px;">Стратегия<br>развития школьного<br>медиацентра</h1>
+                <p style="font-size: clamp(16px, 2.5vw, 20px); color: var(--text-muted); margin-bottom: 50px; line-height: 1.6;">
+                    Сводный анализ лучших практик, определение эффективных форматов вовлечения аудитории и создание рабочего контент-плана.
+                </p>
+                <div style="border-left: 4px solid var(--accent); padding-left: 20px;">
+                    <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">Проект подготовила:</p>
+                    <h3 style="font-size: clamp(20px, 3vw, 28px); margin-bottom: 5px;">Мамутова Мадина Равильевна</h3>
+                    <p style="color: var(--accent); font-weight: 600;">Учитель географии</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 2: Анализ -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title"><i class="fa-solid fa-chart-pie"></i> 1. Анализ медиацентров</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <i class="fa-solid fa-building-columns card-icon"></i>
+                    <h3>МШ (Анталия)</h3>
+                    <ul>
+                        <li>Официально-деловой стиль</li>
+                        <li>Упор на безопасность и надежность</li>
+                        <li>Статичные фотоотчеты</li>
+                        <li>Высокая информативность для родителей</li>
+                    </ul>
+                    <div class="card-footer">Вывод: Слабо вовлекает учеников</div>
+                </div>
+                <div class="card" style="border-color: var(--accent);">
+                    <i class="fa-solid fa-bolt card-icon"></i>
+                    <h3 style="color: var(--accent);">Классика-М (Алания)</h3>
+                    <ul>
+                        <li>Креативный и живой стиль</li>
+                        <li>Голос учеников и неформальность</li>
+                        <li>Динамичные «кружочки» с места</li>
+                        <li>Высокая информативность для учеников</li>
+                    </ul>
+                    <div class="card-footer" style="color: var(--accent);">Вывод: Идеально для комьюнити</div>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-award card-icon"></i>
+                    <h3>Гимназия №9 (Манас)</h3>
+                    <ul>
+                        <li>Эстетично-презентационный</li>
+                        <li>Витрина достижений и традиций</li>
+                        <li>Художественные фото и Reels</li>
+                        <li>Гордость и преемственность</li>
+                    </ul>
+                    <div class="card-footer">Вывод: Работает на внешний бренд</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 3: Форматы и Темы -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title"><i class="fa-solid fa-layer-group"></i> 2. Топ-5 форматов и Топ-10 тем</h2>
+            </div>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-bottom: 20px; color: var(--accent);">Форматы контента</h3>
+                    <div class="list-item"><span class="num">01</span> <strong>Backstage:</strong> Закулисье и жизнь на переменах.</div>
+                    <div class="list-item"><span class="num">02</span> <strong>Полезные гайды:</strong> Чек-листы (сохраняемый контент).</div>
+                    <div class="list-item"><span class="num">03</span> <strong>Блиц-интервью:</strong> Формат «Микрофон в коридоре».</div>
+                    <div class="list-item"><span class="num">04</span> <strong>Интерактивы:</strong> Опросы и квизы на знание школы.</div>
+                    <div class="list-item"><span class="num">05</span> <strong>Эстетичные Reels:</strong> Атмосферные нарезки.</div>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 20px; color: var(--accent);">Темы публикаций</h3>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px;">
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 15px;"><i class="fa-solid fa-check text-accent" style="color:var(--accent); margin-right: 10px;"></i><strong>Люди:</strong> Лица школы, Открытый микрофон, Выпускники.</li>
+                            <li style="margin-bottom: 15px;"><i class="fa-solid fa-check text-accent" style="color:var(--accent); margin-right: 10px;"></i><strong>Польза:</strong> Наука — это модно, Советы профи, Афиша недели.</li>
+                            <li><i class="fa-solid fa-check text-accent" style="color:var(--accent); margin-right: 10px;"></i><strong>Атмосфера:</strong> Один день из жизни, Традиции, Школьный быт, Эко-логика.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 4: План -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title"><i class="fa-solid fa-table"></i> 3. Итоговый контент-план</h2>
+            </div>
+            <div style="overflow-y: auto; flex-grow: 1;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Рубрика</th>
+                            <th>Тема</th>
+                            <th>Формат</th>
+                            <th>Цель внедрения</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="Рубрика"><strong>Голос школы</strong></td>
+                            <td data-label="Тема">«Открытый микрофон»</td>
+                            <td data-label="Формат">Видео / Опросы</td>
+                            <td data-label="Цель">Снять тревожность, дать право голоса родителям и детям.</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Рубрика"><strong>Умная школа</strong></td>
+                            <td data-label="Тема">Лайфхаки для учебы</td>
+                            <td data-label="Формат">Инфографика</td>
+                            <td data-label="Цель">Быть полезным ресурсом, которым делятся.</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Рубрика"><strong>Школьный вайб</strong></td>
+                            <td data-label="Тема">Атмосфера гимназии</td>
+                            <td data-label="Формат">Reels / Клипы</td>
+                            <td data-label="Цель">Создать современный имидж для новых учеников.</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Рубрика"><strong style="color: var(--accent);">Личности</strong></td>
+                            <td data-label="Тема">Учитель географии вне урока</td>
+                            <td data-label="Формат">Пост + Фото</td>
+                            <td data-label="Цель">Сократить дистанцию, повысить доверие к педагогам.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 5: 30/70 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title"><i class="fa-solid fa-scale-balanced"></i> Главный вывод: Баланс контента</h2>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-around; gap: 40px; height: 100%;">
+                <div style="max-width: 500px;">
+                    <div style="margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 20px; border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0;">
+                        <h3 style="font-size: 28px; margin-bottom: 10px;"><span style="color: var(--accent); font-weight: 900; font-size: 40px;">70%</span> Человеческое</h3>
+                        <p style="color: var(--text-muted); line-height: 1.5;">Жизнь школы, лица учителей, эмоции детей. Формирует лояльность, доверие и превращает зрителей в настоящее сообщество.</p>
+                    </div>
+                    <div style="margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 20px; border-left: 4px solid #475569; border-radius: 0 12px 12px 0;">
+                        <h3 style="font-size: 28px; margin-bottom: 10px;"><span style="color: #475569; font-weight: 900; font-size: 40px;">30%</span> Официальное</h3>
+                        <p style="color: var(--text-muted); line-height: 1.5;">Расписания, документы, важные объявления. Поддерживает надежность и статус образовательного учреждения.</p>
+                    </div>
+                    <p style="font-style: italic; font-size: 18px; font-family: 'Playfair Display', serif; color: var(--accent);">
+                        «Медиацентр — это не доска объявлений, а живое пространство для общения».
+                    </p>
+                </div>
+                
+                <div class="balance-visual">
+                    <div class="balance-inner">
+                        <span style="font-size: 48px; font-weight: 900; font-family: 'Montserrat', sans-serif;">30/70</span>
+                        <span style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Баланс</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нижний бар навигации -->
+        <div class="controls-bar">
+            <div class="progress-line" id="progress"></div>
+            <div class="counter" id="counter">1 / 5</div>
+            <div class="nav-buttons">
+                <button class="btn" id="btn-prev" aria-label="Назад"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="btn" id="btn-next" aria-label="Вперед"><i class="fa-solid fa-chevron-right"></i></button>
+                <button class="btn" id="btn-fs" aria-label="На весь экран" style="margin-left: 10px; background: transparent; border: 1px solid var(--border-color);"><i class="fa-solid fa-expand"></i></button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT: ЛОГИКА, СВАЙПЫ, PWA SERVICE WORKER
+         ========================================================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Логика презентации
+            const slides = document.querySelectorAll('.slide');
+            const total = slides.length;
+            let current = 0;
+
+            const btnNext = document.getElementById('btn-next');
+            const btnPrev = document.getElementById('btn-prev');
+            const counter = document.getElementById('counter');
+            const progress = document.getElementById('progress');
+            const btnFs = document.getElementById('btn-fs');
+
+            function updateUI() {
+                slides.forEach((s, i) => {
+                    s.classList.remove('active', 'prev');
+                    if (i === current) {
+                        s.classList.add('active');
+                        s.scrollTop = 0; // Сброс скролла на мобильных
+                    } else if (i < current) {
+                        s.classList.add('prev');
+                    }
+                });
+                
+                counter.textContent = `${current + 1} / ${total}`;
+                progress.style.width = `${((current + 1) / total) * 100}%`;
+                
+                btnPrev.disabled = current === 0;
+                btnNext.disabled = current === total - 1;
+            }
+
+            function goNext() { if (current < total - 1) { current++; updateUI(); } }
+            function goPrev() { if (current > 0) { current--; updateUI(); } }
+
+            btnNext.addEventListener('click', goNext);
+            btnPrev.addEventListener('click', goPrev);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') goNext();
+                if (e.key === 'ArrowLeft') goPrev();
+            });
+
+            // Свайпы для сенсорных экранов
+            let touchStartX = 0;
+            document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, {passive: true});
+            document.addEventListener('touchend', e => {
+                let touchEndX = e.changedTouches[0].screenX;
+                if (touchEndX < touchStartX - 50) goNext();
+                if (touchEndX > touchStartX + 50) goPrev();
+            }, {passive: true});
+
+            // Полноэкранный режим
+            btnFs.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => alert('Полноэкранный режим не поддерживается'));
+                    btnFs.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                } else {
+                    document.exitFullscreen();
+                    btnFs.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                }
+            });
+
+            updateUI(); // Старт
+
+            // 2. ГЕНЕРАЦИЯ PWA (Манифест и Service Worker)
+            
+            // Динамический Web App Manifest (позволяет добавить иконку на рабочий стол)
+            const manifest = {
+                name: "Стратегия Медиацентра",
+                short_name: "Медиацентр",
+                start_url: window.location.pathname,
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [{
+                    // Генерируем SVG иконку "М" на лету (не нужны внешние картинки)
+                    src: "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230f172a'/%3E%3Ctext x='50%25' y='53%25' font-family='Arial' font-size='300' font-weight='bold' fill='%2338bdf8' text-anchor='middle' dominant-baseline='middle'%3EM%3C/text%3E%3C/svg%3E",
+                    sizes: "512x512",
+                    type: "image/svg+xml",
+                    purpose: "any maskable"
+                }]
+            };
+            const manifestString = JSON.stringify(manifest);
+            document.getElementById('manifest-placeholder').setAttribute('href', 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(manifestString));
+
+            // Динамический Service Worker (Кэширует страницу для работы без интернета)
+            if ('serviceWorker' in navigator) {
+                // Создаем скрипт Service Worker как строку
+                const swCode = `
+                    const CACHE_NAME = 'media-presentation-v2';
+                    self.addEventListener('install', e => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', e => {
+                        e.waitUntil(self.clients.claim());
+                    });
+                    self.addEventListener('fetch', e => {
+                        // Для PWA: если нет сети, возвращаем саму страницу из кэша (или выполняем запрос)
+                        e.respondWith(
+                            fetch(e.request).then(response => {
+                                const clone = response.clone();
+                                caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+                                return response;
+                            }).catch(() => {
+                                return caches.match(e.request).then(res => res || new Response('Офлайн режим активен, обновите страницу позже.'));
+                            })
+                        );
+                    });
+                `;
+                // Превращаем строку в URL и регистрируем
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(reg => console.log('PWA Service Worker установлен', reg))
+                    .catch(err => console.log('Ошибка PWA: ', err));
+            }
+
+            // Логика кнопки "Установить приложение"
+            let deferredPrompt;
+            const installBtn = document.getElementById('install-prompt');
+            
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.style.display = 'block'; // Показываем кнопку
+            });
+
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        installBtn.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installBtn.style.display = 'none';
+                console.log('PWA Приложение установлено');
+            });
+        });
+    </script>
+</body>
+</html>
+
