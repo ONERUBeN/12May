@@ -1,34 +1,35 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Мета-теги для мобильных устройств и PWA -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Стратегия Медиацентра | Защита</title>
 
-    <!-- Подключение шрифтов и иконок -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Встроенный манифест для добавления на главный экран -->
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D0%9C%D0%B5%D0%B4%D0%B8%D0%B0%D1%86%D0%B5%D0%BD%D1%82%D1%80%22%2C%22short_name%22%3A%22%D0%9C%D0%B5%D0%B4%D0%B8%D0%B0%D1%86%D0%B5%D0%BD%D1%82%D1%80%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bcharset%3Dutf-8%2C%253Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%253E%253Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27100%27%20fill%3D%27%25230f172a%27%2F%253E%253Ctext%20x%3D%2750%2525%27%20y%3D%2753%2525%27%20font-family%3D%27Arial%27%20font-size%3D%27300%27%20font-weight%3D%27bold%27%20fill%3D%27%252338bdf8%27%20text-anchor%3D%27middle%27%20dominant-baseline%3D%27middle%27%253EM%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 
-    <!-- Динамический манифест генерируется через JS ниже -->
-    <link rel="manifest" id="manifest-placeholder">
+    <!-- Подключение шрифтов и иконок -->
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Inter:wght@400;500;600&display=swap](https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Inter:wght@400;500;600&display=swap)" rel="stylesheet">
+    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css)">
 
     <style>
-        /* ================= ПЕРЕМЕННЫЕ И БАЗА ================= */
+        /* БАЗОВЫЕ ПЕРЕМЕННЫЕ */
         :root {
             --bg-dark: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-card: rgba(30, 41, 59, 0.6);
             --accent: #38bdf8;
             --accent-glow: 0 0 20px rgba(56, 189, 248, 0.4);
             --text-main: #f8fafc;
             --text-muted: #cbd5e1;
             --border-color: rgba(255, 255, 255, 0.1);
-            --pad: clamp(20px, 4vw, 50px);
+            --pad-x: clamp(20px, 5vw, 60px);
+            --pad-y: clamp(20px, 4vw, 40px);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -37,148 +38,147 @@
             font-family: 'Inter', sans-serif;
             background-color: #020617;
             color: var(--text-main);
-            overflow: hidden; /* Блокируем стандартный скролл */
+            overflow: hidden; /* Блокировка скролла для эффекта приложения */
             width: 100vw; height: 100vh;
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* Анимированный фон PWA */
+        /* АНИМИРОВАННЫЙ ФОН */
         .app-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 10% 20%, rgba(15, 23, 42, 1) 0%, rgba(2, 6, 23, 1) 90%);
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
             z-index: -2;
         }
         .glow-orb {
-            position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; z-index: -1;
+            position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; z-index: -1;
         }
-        .orb-1 { top: -10%; right: -10%; width: 50vw; height: 50vw; background: #0ea5e9; }
-        .orb-2 { bottom: -20%; left: -10%; width: 60vw; height: 60vw; background: #6366f1; }
+        .orb-1 { top: -20%; right: -10%; width: 60vw; height: 60vw; background: #0ea5e9; }
+        .orb-2 { bottom: -20%; left: -10%; width: 70vw; height: 70vw; background: #4f46e5; }
 
-        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; line-height: 1.2; }
 
-        /* ================= КОНТЕЙНЕР ПРИЛОЖЕНИЯ ================= */
+        /* КОНТЕЙНЕР СЛАЙДОВ */
         #app-container {
-            width: 100%; max-width: 1400px; height: 100%; max-height: 900px;
+            width: 100%; max-width: 1200px; height: 100%; max-height: 800px;
             position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            background: rgba(15, 23, 42, 0.4);
+            background: rgba(15, 23, 42, 0.3);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
             border-radius: 24px;
             overflow: hidden;
             display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        /* Убираем рамки на телефонах, делаем на весь экран */
+        /* Адаптация под телефоны: убираем рамки, на весь экран */
         @media (max-width: 768px) {
-            #app-container { border-radius: 0; border: none; max-height: none; }
+            #app-container { border-radius: 0; border: none; max-height: 100vh; }
         }
 
-        /* ================= СЛАЙДЫ ================= */
+        /* СЛАЙДЫ */
         .slide {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: var(--pad); padding-bottom: 90px;
+            padding: var(--pad-y) var(--pad-x); padding-bottom: 90px;
             opacity: 0; visibility: hidden;
             transform: translateX(50px) scale(0.98);
             transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            overflow-y: auto;
+            overflow-y: auto; /* Внутренний скролл, если контент длинный на телефоне */
             display: flex; flex-direction: column;
         }
 
         .slide.active { opacity: 1; visibility: visible; transform: translateX(0) scale(1); z-index: 10; }
         .slide.prev { transform: translateX(-50px) scale(0.98); }
 
-        .slide-header {
-            margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
-        }
-        .slide-title { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: var(--text-main); }
-        .slide-title i { color: var(--accent); margin-right: 10px; }
+        .slide-header { margin-bottom: clamp(20px, 4vw, 40px); border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .slide-title { font-size: clamp(24px, 4vw, 42px); font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 15px; }
+        .slide-title i { color: var(--accent); }
 
-        /* ================= UI КОМПОНЕНТЫ ================= */
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        /* ЭЛЕМЕНТЫ КОНТЕНТА */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: clamp(15px, 3vw, 25px); flex-grow: 1;}
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: clamp(20px, 4vw, 40px); flex-grow: 1;}
         
         .card {
             background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 16px; padding: 25px; display: flex; flex-direction: column;
-            transition: transform 0.3s;
+            border-radius: 16px; padding: clamp(20px, 3vw, 25px); display: flex; flex-direction: column;
         }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: var(--accent-glow); }
         .card-icon { font-size: 32px; color: var(--accent); margin-bottom: 15px; }
-        .card h3 { font-size: 22px; margin-bottom: 15px; }
+        .card h3 { font-size: clamp(20px, 2.5vw, 24px); margin-bottom: 15px; }
         .card ul { list-style: none; padding: 0; margin-bottom: 20px; flex-grow: 1;}
-        .card ul li { margin-bottom: 10px; font-size: 15px; color: var(--text-muted); padding-left: 20px; position: relative; }
+        .card ul li { margin-bottom: 10px; font-size: 15px; color: var(--text-muted); padding-left: 20px; position: relative; line-height: 1.4;}
         .card ul li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
-        .card-footer { padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 14px; font-weight: 600; color: #a5b4fc;}
+        .card-footer { padding-top: 15px; border-top: 1px dashed var(--border-color); font-size: 14px; font-weight: 600; color: #a5b4fc;}
 
         .list-item {
             background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);
-            padding: 15px 20px; border-radius: 12px; margin-bottom: 10px;
-            display: flex; align-items: center; gap: 15px;
+            padding: 15px; border-radius: 12px; margin-bottom: 12px;
+            display: flex; align-items: flex-start; gap: 15px;
         }
-        .list-item .num { font-weight: 900; color: var(--accent); font-size: 20px; min-width: 30px; }
+        .list-item .num { font-weight: 900; color: var(--accent); font-size: 20px; min-width: 30px; margin-top: -2px;}
+        .list-item p { font-size: 15px; line-height: 1.4; color: var(--text-muted); margin:0;}
+        .list-item p strong { color: var(--text-main); }
 
-        /* Адаптивная таблица */
+        /* ТАБЛИЦА (Адаптивная) */
+        .table-wrapper { width: 100%; overflow-x: hidden; flex-grow: 1; }
         .data-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 16px; overflow: hidden; }
-        .data-table th, .data-table td { padding: 20px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .data-table th { background: rgba(0,0,0,0.3); color: var(--accent); font-size: 14px; text-transform: uppercase; font-weight: 800; }
-        .data-table td { font-size: 15px; color: var(--text-main); }
+        .data-table th, .data-table td { padding: clamp(15px, 2vw, 20px); text-align: left; border-bottom: 1px solid var(--border-color); }
+        .data-table th { background: rgba(0,0,0,0.3); color: var(--accent); font-size: 13px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
+        .data-table td { font-size: 15px; color: var(--text-main); line-height: 1.5; }
         
         @media (max-width: 768px) {
             .data-table thead { display: none; }
             .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
-            .data-table tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 12px; }
-            .data-table td { padding-left: 45%; position: relative; }
+            .data-table tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-card);}
+            .data-table td { padding: 15px 15px 15px 45%; position: relative; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+            .data-table td:last-child { border-bottom: none; }
             .data-table td::before {
-                content: attr(data-label); position: absolute; left: 15px; width: 40%;
-                font-size: 12px; color: var(--accent); text-transform: uppercase; font-weight: 700;
+                content: attr(data-label); position: absolute; left: 15px; top: 15px; width: 40%;
+                font-size: 11px; color: var(--accent); text-transform: uppercase; font-weight: 700;
             }
         }
 
-        /* График 30/70 на CSS */
+        /* ВИЗУАЛ 30/70 */
+        .balance-container { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-around; gap: 30px; height: 100%; }
+        .balance-text { max-width: 500px; }
+        .stat-box { margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: clamp(15px, 3vw, 25px); border-radius: 16px; border-left: 4px solid var(--accent); }
+        .stat-box.official { border-left-color: #475569; }
+        .stat-percent { font-size: clamp(32px, 6vw, 48px); font-weight: 900; line-height: 1; margin-bottom: 5px; }
+        .stat-desc { color: var(--text-muted); font-size: clamp(14px, 2vw, 16px); line-height: 1.5; }
+
         .balance-visual {
-            width: clamp(200px, 40vw, 350px); height: clamp(200px, 40vw, 350px);
+            width: clamp(200px, 40vw, 300px); height: clamp(200px, 40vw, 300px);
             border-radius: 50%;
             background: conic-gradient(var(--accent) 0% 70%, #475569 70% 100%);
             display: flex; justify-content: center; align-items: center;
-            box-shadow: var(--accent-glow);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .balance-inner {
             width: 75%; height: 75%; background: var(--bg-dark); border-radius: 50%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        /* ================= НАВИГАЦИЯ (НИЖНИЙ БАР) ================= */
+        /* НАВИГАЦИЯ */
         .controls-bar {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 15px var(--pad);
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px);
+            padding: 15px var(--pad-x);
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px);
             border-top: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center;
             z-index: 100;
         }
-        .progress-line { position: absolute; top: -2px; left: 0; height: 2px; background: var(--accent); transition: width 0.3s; }
+        .progress-line { position: absolute; top: -2px; left: 0; height: 2px; background: var(--accent); transition: width 0.3s ease-out; box-shadow: var(--accent-glow);}
         
-        .counter { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 16px; letter-spacing: 2px; }
+        .counter { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(14px, 2.5vw, 16px); letter-spacing: 2px; }
         .nav-buttons { display: flex; gap: 10px; }
         .btn {
-            background: rgba(255,255,255,0.1); border: none; color: white;
-            width: 44px; height: 44px; border-radius: 50%; font-size: 18px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: white;
+            width: clamp(40px, 8vw, 48px); height: clamp(40px, 8vw, 48px); border-radius: 50%; font-size: 16px;
             cursor: pointer; display: flex; justify-content: center; align-items: center;
-            transition: 0.2s;
+            transition: all 0.2s;
         }
-        .btn:hover:not(:disabled) { background: var(--accent); box-shadow: var(--accent-glow); }
+        .btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); box-shadow: var(--accent-glow); transform: scale(1.05);}
         .btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* Уведомление об установке PWA */
-        #install-prompt {
-            position: fixed; top: 20px; right: 20px; background: var(--accent); color: #000;
-            padding: 10px 20px; border-radius: 30px; font-weight: 700; font-size: 14px;
-            cursor: pointer; z-index: 1000; display: none; box-shadow: var(--accent-glow);
-            animation: bounceIn 0.5s ease;
-        }
-        @keyframes bounceIn { 0% {transform: scale(0.8); opacity: 0;} 100% {transform: scale(1); opacity: 1;} }
 
     </style>
 </head>
@@ -189,28 +189,28 @@
         <div class="glow-orb orb-2"></div>
     </div>
 
-    <!-- Кнопка установки PWA (появится автоматически, если браузер разрешит) -->
-    <div id="install-prompt"><i class="fa-solid fa-download"></i> Установить приложение</div>
-
     <div id="app-container">
         
         <!-- СЛАЙД 1: Титульный -->
         <div class="slide active">
-            <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; max-width: 800px;">
-                <span style="display: inline-block; background: var(--accent); color: #000; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 14px; text-transform: uppercase; margin-bottom: 20px; width: fit-content;">Защита проекта | 12 мая</span>
-                <h1 style="font-size: clamp(36px, 6vw, 72px); line-height: 1.1; margin-bottom: 20px;">Стратегия<br>развития школьного<br>медиацентра</h1>
-                <p style="font-size: clamp(16px, 2.5vw, 20px); color: var(--text-muted); margin-bottom: 50px; line-height: 1.6;">
+            <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                <span style="display: inline-block; background: var(--accent); color: #000; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: clamp(10px, 2vw, 12px); text-transform: uppercase; margin-bottom: 25px; width: fit-content; letter-spacing: 1px;">Защита проекта | 12 мая</span>
+                
+                <h1 style="font-size: clamp(40px, 8vw, 76px); line-height: 1.1; margin-bottom: 25px; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">Стратегия<br>развития<br>школьного<br>медиацентра</h1>
+                
+                <p style="font-size: clamp(15px, 3vw, 20px); color: var(--text-muted); margin-bottom: 40px; line-height: 1.6; max-width: 700px;">
                     Сводный анализ лучших практик, определение эффективных форматов вовлечения аудитории и создание рабочего контент-плана.
                 </p>
+                
                 <div style="border-left: 4px solid var(--accent); padding-left: 20px;">
-                    <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">Проект подготовила:</p>
-                    <h3 style="font-size: clamp(20px, 3vw, 28px); margin-bottom: 5px;">Мамутова Мадина Равильевна</h3>
-                    <p style="color: var(--accent); font-weight: 600;">Учитель географии</p>
+                    <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">Проект подготовила:</p>
+                    <h3 style="font-size: clamp(18px, 4vw, 26px); margin-bottom: 5px;">Мамутова Мадина Равильевна</h3>
+                    <p style="color: var(--accent); font-weight: 600; font-size: clamp(14px, 3vw, 16px);">Учитель географии</p>
                 </div>
             </div>
         </div>
 
-        <!-- СЛАЙД 2: Анализ -->
+        <!-- СЛАЙД 2: Анализ 3 школ -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title"><i class="fa-solid fa-chart-pie"></i> 1. Анализ медиацентров</h2>
@@ -221,22 +221,20 @@
                     <h3>МШ (Анталия)</h3>
                     <ul>
                         <li>Официально-деловой стиль</li>
-                        <li>Упор на безопасность и надежность</li>
+                        <li>Упор на безопасность и информирование</li>
                         <li>Статичные фотоотчеты</li>
-                        <li>Высокая информативность для родителей</li>
                     </ul>
-                    <div class="card-footer">Вывод: Слабо вовлекает учеников</div>
+                    <div class="card-footer">Вывод: Хорошо для родителей, слабо вовлекает детей</div>
                 </div>
-                <div class="card" style="border-color: var(--accent);">
+                <div class="card" style="border-color: var(--accent); box-shadow: var(--accent-glow);">
                     <i class="fa-solid fa-bolt card-icon"></i>
                     <h3 style="color: var(--accent);">Классика-М (Алания)</h3>
                     <ul>
                         <li>Креативный и живой стиль</li>
-                        <li>Голос учеников и неформальность</li>
+                        <li>Доминирует голос учеников (UGC)</li>
                         <li>Динамичные «кружочки» с места</li>
-                        <li>Высокая информативность для учеников</li>
                     </ul>
-                    <div class="card-footer" style="color: var(--accent);">Вывод: Идеально для комьюнити</div>
+                    <div class="card-footer" style="color: var(--accent);">Вывод: Идеально для комьюнити и лояльности</div>
                 </div>
                 <div class="card">
                     <i class="fa-solid fa-award card-icon"></i>
@@ -244,10 +242,9 @@
                     <ul>
                         <li>Эстетично-презентационный</li>
                         <li>Витрина достижений и традиций</li>
-                        <li>Художественные фото и Reels</li>
-                        <li>Гордость и преемственность</li>
+                        <li>Качественные фото и Reels</li>
                     </ul>
-                    <div class="card-footer">Вывод: Работает на внешний бренд</div>
+                    <div class="card-footer">Вывод: Работает на бренд, но мало интерактива</div>
                 </div>
             </div>
         </div>
@@ -259,21 +256,43 @@
             </div>
             <div class="grid-2">
                 <div>
-                    <h3 style="margin-bottom: 20px; color: var(--accent);">Форматы контента</h3>
-                    <div class="list-item"><span class="num">01</span> <strong>Backstage:</strong> Закулисье и жизнь на переменах.</div>
-                    <div class="list-item"><span class="num">02</span> <strong>Полезные гайды:</strong> Чек-листы (сохраняемый контент).</div>
-                    <div class="list-item"><span class="num">03</span> <strong>Блиц-интервью:</strong> Формат «Микрофон в коридоре».</div>
-                    <div class="list-item"><span class="num">04</span> <strong>Интерактивы:</strong> Опросы и квизы на знание школы.</div>
-                    <div class="list-item"><span class="num">05</span> <strong>Эстетичные Reels:</strong> Атмосферные нарезки.</div>
+                    <h3 style="margin-bottom: 20px; color: var(--text-main); font-size: 20px;">Эффективные форматы</h3>
+                    <div class="list-item">
+                        <div class="num">01</div>
+                        <p><strong>Backstage (Закулисье):</strong> Короткие видео о подготовке мероприятий и переменах.</p>
+                    </div>
+                    <div class="list-item">
+                        <div class="num">02</div>
+                        <p><strong>Полезные гайды:</strong> Чек-листы и инструкции (самый сохраняемый контент).</p>
+                    </div>
+                    <div class="list-item">
+                        <div class="num">03</div>
+                        <p><strong>Блиц-интервью:</strong> Формат быстрых ответов «Микрофон в коридоре».</p>
+                    </div>
+                    <div class="list-item">
+                        <div class="num">04</div>
+                        <p><strong>Интерактивы:</strong> Опросы, квизы на знание школьных фактов и педагогов.</p>
+                    </div>
+                    <div class="list-item">
+                        <div class="num">05</div>
+                        <p><strong>Эстетичные Reels:</strong> Атмосферные нарезки под музыку для имиджа.</p>
+                    </div>
                 </div>
                 <div>
-                    <h3 style="margin-bottom: 20px; color: var(--accent);">Темы публикаций</h3>
-                    <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px;">
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="margin-bottom: 15px;"><i class="fa-solid fa-check text-accent" style="color:var(--accent); margin-right: 10px;"></i><strong>Люди:</strong> Лица школы, Открытый микрофон, Выпускники.</li>
-                            <li style="margin-bottom: 15px;"><i class="fa-solid fa-check text-accent" style="color:var(--accent); margin-right: 10px;"></i><strong>Польза:</strong> Наука — это модно, Советы профи, Афиша недели.</li>
-                            <li><i class="fa-solid fa-check text-accent" style="color:var(--accent); margin-right: 10px;"></i><strong>Атмосфера:</strong> Один день из жизни, Традиции, Школьный быт, Эко-логика.</li>
-                        </ul>
+                    <h3 style="margin-bottom: 20px; color: var(--text-main); font-size: 20px;">Кластеризация тем</h3>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 16px; padding: 25px;">
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: var(--accent); margin-bottom: 10px; font-size: 14px; text-transform: uppercase;">Польза</h4>
+                            <p style="font-size: 15px; color: var(--text-muted); line-height: 1.5;">Наука — это модно, Советы профи (психолог/ЕГЭ), Афиша недели.</p>
+                        </div>
+                        <div style="margin-bottom: 20px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                            <h4 style="color: var(--accent); margin-bottom: 10px; font-size: 14px; text-transform: uppercase;">Люди</h4>
+                            <p style="font-size: 15px; color: var(--text-muted); line-height: 1.5;">Лица школы (учителя вне урока), Открытый микрофон, Выпускники.</p>
+                        </div>
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                            <h4 style="color: var(--accent); margin-bottom: 10px; font-size: 14px; text-transform: uppercase;">Атмосфера</h4>
+                            <p style="font-size: 15px; color: var(--text-muted); line-height: 1.5;">Один день из жизни, Традиции, Школьный быт, Эко-логика.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -282,96 +301,95 @@
         <!-- СЛАЙД 4: План -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title"><i class="fa-solid fa-table"></i> 3. Итоговый контент-план</h2>
+                <h2 class="slide-title"><i class="fa-solid fa-table"></i> 3. Контент-план медиацентра</h2>
             </div>
-            <div style="overflow-y: auto; flex-grow: 1;">
+            <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Рубрика</th>
-                            <th>Тема</th>
-                            <th>Формат</th>
-                            <th>Цель внедрения</th>
+                            <th style="width: 20%;">Рубрика</th>
+                            <th style="width: 30%;">Тема</th>
+                            <th style="width: 25%;">Формат</th>
+                            <th style="width: 25%;">Цель внедрения</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td data-label="Рубрика"><strong>Голос школы</strong></td>
-                            <td data-label="Тема">«Открытый микрофон»</td>
-                            <td data-label="Формат">Видео / Опросы</td>
+                            <td data-label="Тема">«Открытый микрофон» (Вопросы администрации)</td>
+                            <td data-label="Формат">Видео-ответы / Опросы</td>
                             <td data-label="Цель">Снять тревожность, дать право голоса родителям и детям.</td>
                         </tr>
                         <tr>
                             <td data-label="Рубрика"><strong>Умная школа</strong></td>
-                            <td data-label="Тема">Лайфхаки для учебы</td>
-                            <td data-label="Формат">Инфографика</td>
-                            <td data-label="Цель">Быть полезным ресурсом, которым делятся.</td>
+                            <td data-label="Тема">Лайфхаки для учебы и хитрости предметов</td>
+                            <td data-label="Формат">Инфографика / Карточки</td>
+                            <td data-label="Цель">Стать ресурсом, которым хочется делиться и сохранять.</td>
                         </tr>
                         <tr>
                             <td data-label="Рубрика"><strong>Школьный вайб</strong></td>
-                            <td data-label="Тема">Атмосфера гимназии</td>
-                            <td data-label="Формат">Reels / Клипы</td>
-                            <td data-label="Цель">Создать современный имидж для новых учеников.</td>
+                            <td data-label="Тема">«Один день из жизни...» (Атмосфера гимназии)</td>
+                            <td data-label="Формат">Короткие видео / Reels</td>
+                            <td data-label="Цель">Создать привлекательный современный имидж.</td>
                         </tr>
                         <tr>
                             <td data-label="Рубрика"><strong style="color: var(--accent);">Личности</strong></td>
-                            <td data-label="Тема">Учитель географии вне урока</td>
-                            <td data-label="Формат">Пост + Фото</td>
-                            <td data-label="Цель">Сократить дистанцию, повысить доверие к педагогам.</td>
+                            <td data-label="Тема">Учитель географии вне урока (путешествия, хобби)</td>
+                            <td data-label="Формат">Пост-знакомство + Фото</td>
+                            <td data-label="Цель">Сократить дистанцию между педагогом и учениками.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- СЛАЙД 5: 30/70 -->
+        <!-- СЛАЙД 5: Вывод -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title"><i class="fa-solid fa-scale-balanced"></i> Главный вывод: Баланс контента</h2>
+                <h2 class="slide-title"><i class="fa-solid fa-scale-balanced"></i> Итог: Золотое правило 30/70</h2>
             </div>
-            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-around; gap: 40px; height: 100%;">
-                <div style="max-width: 500px;">
-                    <div style="margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 20px; border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0;">
-                        <h3 style="font-size: 28px; margin-bottom: 10px;"><span style="color: var(--accent); font-weight: 900; font-size: 40px;">70%</span> Человеческое</h3>
-                        <p style="color: var(--text-muted); line-height: 1.5;">Жизнь школы, лица учителей, эмоции детей. Формирует лояльность, доверие и превращает зрителей в настоящее сообщество.</p>
+            <div class="balance-container">
+                <div class="balance-text">
+                    <div class="stat-box">
+                        <div class="stat-percent" style="color: var(--accent);">70%</div>
+                        <h3 style="font-size: 20px; margin-bottom: 8px;">Человеческое</h3>
+                        <p class="stat-desc">Эмоции, жизнь школы, истории успеха учеников и учителей. Именно этот контент формирует комьюнити и лояльность.</p>
                     </div>
-                    <div style="margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 20px; border-left: 4px solid #475569; border-radius: 0 12px 12px 0;">
-                        <h3 style="font-size: 28px; margin-bottom: 10px;"><span style="color: #475569; font-weight: 900; font-size: 40px;">30%</span> Официальное</h3>
-                        <p style="color: var(--text-muted); line-height: 1.5;">Расписания, документы, важные объявления. Поддерживает надежность и статус образовательного учреждения.</p>
+                    <div class="stat-box official">
+                        <div class="stat-percent" style="color: #94a3b8;">30%</div>
+                        <h3 style="font-size: 20px; margin-bottom: 8px;">Официальное</h3>
+                        <p class="stat-desc">Расписания, важные объявления, документы. Это обязательный минимум для поддержания надежности источника.</p>
                     </div>
-                    <p style="font-style: italic; font-size: 18px; font-family: 'Playfair Display', serif; color: var(--accent);">
-                        «Медиацентр — это не доска объявлений, а живое пространство для общения».
-                    </p>
+                    <div style="margin-top: 30px; border-left: 3px solid var(--accent); padding-left: 15px;">
+                        <p style="font-style: italic; font-size: clamp(16px, 2vw, 18px); font-family: 'Playfair Display', serif; color: var(--text-main);">
+                            «Медиацентр — это не доска объявлений, а живое пространство для общения».
+                        </p>
+                    </div>
                 </div>
                 
                 <div class="balance-visual">
                     <div class="balance-inner">
-                        <span style="font-size: 48px; font-weight: 900; font-family: 'Montserrat', sans-serif;">30/70</span>
-                        <span style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Баланс</span>
+                        <span style="font-size: clamp(32px, 6vw, 48px); font-weight: 900; font-family: 'Montserrat', sans-serif;">30/70</span>
+                        <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Баланс</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Нижний бар навигации -->
+        <!-- НАВИГАЦИЯ -->
         <div class="controls-bar">
             <div class="progress-line" id="progress"></div>
             <div class="counter" id="counter">1 / 5</div>
             <div class="nav-buttons">
                 <button class="btn" id="btn-prev" aria-label="Назад"><i class="fa-solid fa-chevron-left"></i></button>
                 <button class="btn" id="btn-next" aria-label="Вперед"><i class="fa-solid fa-chevron-right"></i></button>
-                <button class="btn" id="btn-fs" aria-label="На весь экран" style="margin-left: 10px; background: transparent; border: 1px solid var(--border-color);"><i class="fa-solid fa-expand"></i></button>
+                <button class="btn" id="btn-fs" aria-label="На весь экран"><i class="fa-solid fa-expand"></i></button>
             </div>
         </div>
-
     </div>
 
-    <!-- =========================================================
-         JAVASCRIPT: ЛОГИКА, СВАЙПЫ, PWA SERVICE WORKER
-         ========================================================= -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Логика презентации
             const slides = document.querySelectorAll('.slide');
             const total = slides.length;
             let current = 0;
@@ -382,6 +400,7 @@
             const progress = document.getElementById('progress');
             const btnFs = document.getElementById('btn-fs');
 
+            // 1. Управление слайдами
             function updateUI() {
                 slides.forEach((s, i) => {
                     s.classList.remove('active', 'prev');
@@ -406,114 +425,56 @@
             btnNext.addEventListener('click', goNext);
             btnPrev.addEventListener('click', goPrev);
 
+            // Клавиатура
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight' || e.key === ' ') goNext();
                 if (e.key === 'ArrowLeft') goPrev();
             });
 
-            // Свайпы для сенсорных экранов
+            // 2. Идеальные свайпы для мобильных
             let touchStartX = 0;
-            document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, {passive: true});
-            document.addEventListener('touchend', e => {
-                let touchEndX = e.changedTouches[0].screenX;
-                if (touchEndX < touchStartX - 50) goNext();
-                if (touchEndX > touchStartX + 50) goPrev();
+            let touchStartY = 0;
+            
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
             }, {passive: true});
 
-            // Полноэкранный режим
+            document.addEventListener('touchend', e => {
+                let touchEndX = e.changedTouches[0].screenX;
+                let touchEndY = e.changedTouches[0].screenY;
+                
+                // Проверяем, что свайп был горизонтальным (а не вертикальный скролл текста)
+                if (Math.abs(touchStartX - touchEndX) > Math.abs(touchStartY - touchEndY)) {
+                    if (touchEndX < touchStartX - 50) goNext();
+                    if (touchEndX > touchStartX + 50) goPrev();
+                }
+            }, {passive: true});
+
+            // 3. Полноэкранный режим
             btnFs.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(() => alert('Полноэкранный режим не поддерживается'));
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen();
+                    } else if (document.documentElement.webkitRequestFullscreen) { /* Safari */
+                        document.documentElement.webkitRequestFullscreen();
+                    }
                     btnFs.innerHTML = '<i class="fa-solid fa-compress"></i>';
                 } else {
-                    document.exitFullscreen();
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) { /* Safari */
+                        document.webkitExitFullscreen();
+                    }
                     btnFs.innerHTML = '<i class="fa-solid fa-expand"></i>';
                 }
             });
 
-            updateUI(); // Старт
-
-            // 2. ГЕНЕРАЦИЯ PWA (Манифест и Service Worker)
-            
-            // Динамический Web App Manifest (позволяет добавить иконку на рабочий стол)
-            const manifest = {
-                name: "Стратегия Медиацентра",
-                short_name: "Медиацентр",
-                start_url: window.location.pathname,
-                display: "standalone",
-                background_color: "#0f172a",
-                theme_color: "#0f172a",
-                icons: [{
-                    // Генерируем SVG иконку "М" на лету (не нужны внешние картинки)
-                    src: "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230f172a'/%3E%3Ctext x='50%25' y='53%25' font-family='Arial' font-size='300' font-weight='bold' fill='%2338bdf8' text-anchor='middle' dominant-baseline='middle'%3EM%3C/text%3E%3C/svg%3E",
-                    sizes: "512x512",
-                    type: "image/svg+xml",
-                    purpose: "any maskable"
-                }]
-            };
-            const manifestString = JSON.stringify(manifest);
-            document.getElementById('manifest-placeholder').setAttribute('href', 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(manifestString));
-
-            // Динамический Service Worker (Кэширует страницу для работы без интернета)
-            if ('serviceWorker' in navigator) {
-                // Создаем скрипт Service Worker как строку
-                const swCode = `
-                    const CACHE_NAME = 'media-presentation-v2';
-                    self.addEventListener('install', e => {
-                        self.skipWaiting();
-                    });
-                    self.addEventListener('activate', e => {
-                        e.waitUntil(self.clients.claim());
-                    });
-                    self.addEventListener('fetch', e => {
-                        // Для PWA: если нет сети, возвращаем саму страницу из кэша (или выполняем запрос)
-                        e.respondWith(
-                            fetch(e.request).then(response => {
-                                const clone = response.clone();
-                                caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-                                return response;
-                            }).catch(() => {
-                                return caches.match(e.request).then(res => res || new Response('Офлайн режим активен, обновите страницу позже.'));
-                            })
-                        );
-                    });
-                `;
-                // Превращаем строку в URL и регистрируем
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                
-                navigator.serviceWorker.register(swUrl)
-                    .then(reg => console.log('PWA Service Worker установлен', reg))
-                    .catch(err => console.log('Ошибка PWA: ', err));
-            }
-
-            // Логика кнопки "Установить приложение"
-            let deferredPrompt;
-            const installBtn = document.getElementById('install-prompt');
-            
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                installBtn.style.display = 'block'; // Показываем кнопку
-            });
-
-            installBtn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        installBtn.style.display = 'none';
-                    }
-                    deferredPrompt = null;
-                }
-            });
-
-            window.addEventListener('appinstalled', () => {
-                installBtn.style.display = 'none';
-                console.log('PWA Приложение установлено');
-            });
+            updateUI(); // Запуск
         });
     </script>
 </body>
 </html>
 
+
+```
